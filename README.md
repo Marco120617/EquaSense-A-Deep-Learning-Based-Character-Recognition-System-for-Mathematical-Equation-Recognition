@@ -1,6 +1,4 @@
-#EquaSense
-
-## A Deep Learning-Based Optical Character Recognition System for Mathematical Equation Recognition
+## EquaSense - A Deep Learning-Based Optical Character Recognition System for Mathematical Equation Recognition
 
 ### Overview
 
