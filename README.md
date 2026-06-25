@@ -145,6 +145,172 @@ python main.py
 * Support for handwritten and printed equations
 * Reliable LaTeX generation
 
+## How to Download and Use EquaSense
+
+### Step 1: Download the Project
+
+Clone the repository using Git:
+
+```bash
+git clone https://github.com/Keyarru/Sample-Project-Group-4.git
+```
+
+Or download the ZIP file:
+
+1. Open the GitHub repository.
+2. Click the **Code** button.
+3. Select **Download ZIP**.
+4. Extract the ZIP file to your preferred location.
+
+---
+
+### Step 2: Open the Project
+
+Navigate to the project folder:
+
+```bash
+cd Sample-Project-Group-4
+```
+
+Open the project using your preferred IDE:
+
+* Visual Studio Code
+* PyCharm
+* Spyder
+* Any Python-supported IDE
+
+For Visual Studio Code:
+
+```bash
+code .
+```
+
+---
+
+### Step 3: Install Python
+
+Ensure Python 3.10 or later is installed.
+
+Verify installation:
+
+```bash
+python --version
+```
+
+---
+
+### Step 4: Install Required Libraries
+
+Install all project dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+### Step 5: Install Tesseract OCR
+
+1. Download Tesseract OCR from:
+   https://github.com/UB-Mannheim/tesseract/wiki
+
+2. Install the software.
+
+3. Add the Tesseract installation folder to your system PATH.
+
+4. Verify installation:
+
+```bash
+tesseract --version
+```
+
+---
+
+### Step 6: Run the Application
+
+Start EquaSense:
+
+```bash
+python main.py
+```
+
+The graphical user interface (GUI) will open.
+
+---
+
+## How to Use EquaSense
+
+### Upload an Equation Image
+
+1. Click **Upload Image**.
+2. Select an image containing a handwritten or printed mathematical equation.
+3. The selected image will be displayed in the preview area.
+
+### Preprocess the Image
+
+1. Click **Preprocess**.
+2. The system applies:
+
+   * Grayscale conversion
+   * Noise reduction
+   * Binarization
+3. The cleaned image will be displayed.
+
+### Recognize the Equation
+
+1. Click **Recognize Equation**.
+2. The OCR engine analyzes the image.
+3. The recognized equation is displayed in the output area.
+
+### Export Results
+
+1. Click **Export**.
+2. Choose the desired output format:
+
+   * TXT
+   * PDF
+   * LaTeX (future version)
+3. Select a save location.
+4. The output file will be generated and saved.
+
+### Batch Processing (Future Feature)
+
+1. Select multiple equation images.
+2. Start batch processing.
+3. EquaSense processes each image sequentially.
+4. Results are automatically generated and stored.
+
+---
+
+## Troubleshooting
+
+### Tesseract Not Found
+
+If you receive a Tesseract error:
+
+```python
+pytesseract.pytesseract.tesseract_cmd = r"C:\\Program Files\\Tesseract-OCR\\tesseract.exe"
+```
+
+Update the path according to your installation directory.
+
+### Missing Libraries
+
+Reinstall dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+### Application Does Not Start
+
+Verify that:
+
+* Python is installed correctly.
+* All required libraries are installed.
+* Tesseract OCR is properly configured.
+
+
 ---
 
 ## Project Team
