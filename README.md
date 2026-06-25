@@ -1,0 +1,2 @@
+# EquaSense-A-Deep-Learning-Based-Character-Recognition-System-for-Mathematical-Equation-Recognition
+EquaSense is a deep learning–based mathematical equation recognition system that converts handwritten or printed equations into structured formats such as LaTeX. Using image preprocessing, DenseNet feature extraction, and a Transformer encoder-decoder, the system identifies symbols, and reconstructs equations accurately.
