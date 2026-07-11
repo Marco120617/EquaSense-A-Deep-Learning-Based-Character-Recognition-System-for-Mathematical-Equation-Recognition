@@ -1,29 +1,56 @@
-import streamlit as st
-import time
+import importlib
+import importlib.util
 import os
+import sys
+import time
+
 import pandas as pd
+import streamlit as st
 from PIL import Image
+
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+os.chdir(APP_DIR)
+
+VENV_SITE_PACKAGES = os.path.join(APP_DIR, ".venv", "Lib", "site-packages")
+if os.path.isdir(VENV_SITE_PACKAGES) and VENV_SITE_PACKAGES not in sys.path:
+    sys.path.insert(0, VENV_SITE_PACKAGES)
 
 # Core architectural layer imports
 from src.logic.preprocess import preprocess_image
 from src.logic.metrics import calculate_accuracy, calculate_cer
 from src.data_layer.history_db import save_result
 
+
+def _check_pix2tex():
+    try:
+        if importlib.util.find_spec("pix2tex") is None:
+            if os.path.isdir(os.path.join(VENV_SITE_PACKAGES, "pix2tex")):
+                return True, "available via local venv path"
+            return False, "pix2tex package not found"
+        pix2tex_cli = importlib.import_module("pix2tex.cli")
+        if not hasattr(pix2tex_cli, "LatexOCR"):
+            return False, "LatexOCR class not available"
+        return True, "available"
+    except Exception as exc:
+        return False, f"import failed: {exc}"
+
+
+def _check_tesseract():
+    try:
+        if importlib.util.find_spec("pytesseract") is None:
+            return False, "pytesseract package not found"
+        import pytesseract
+        return True, "available"
+    except Exception as exc:
+        return False, f"import failed: {exc}"
+
+
 # Optional OCR Engines Dependency Checks
-PIX2TEX_AVAILABLE = False
-TESSERACT_AVAILABLE = False
+PIX2TEX_AVAILABLE, PIX2TEX_STATUS = _check_pix2tex()
+TESSERACT_AVAILABLE, TESSERACT_STATUS = _check_tesseract()
 
-try:
+if PIX2TEX_AVAILABLE:
     from pix2tex.cli import LatexOCR
-    PIX2TEX_AVAILABLE = True
-except Exception:
-    PIX2TEX_AVAILABLE = False
-
-try:
-    import pytesseract
-    TESSERACT_AVAILABLE = True
-except Exception:
-    TESSERACT_AVAILABLE = False
 
 @st.cache_resource
 def load_latex_ocr_model():
@@ -48,8 +75,13 @@ def recognize_with_pix2tex(image):
     if model is None:
         return ""
     try:
+        # pix2tex works best with original, non-thresholded images
+        # Convert to grayscale if needed, but preserve gradients
+        if image.mode != 'RGB':
+            image = image.convert('RGB')
         return model(image)
-    except Exception:
+    except Exception as e:
+        st.error(f"pix2tex recognition error: {str(e)}")
         return ""
 
 
@@ -82,18 +114,19 @@ ocr_engine = st.sidebar.selectbox(
 )
 
 use_preprocessing = st.sidebar.checkbox("Apply image preprocessing", value=True)
+st.sidebar.caption("Note: Preprocessing applies only to Tesseract. LaTeX-OCR uses the original image for best results.")
 st.sidebar.markdown("---")
 st.sidebar.write("**Engine Status:**")
 
 if PIX2TEX_AVAILABLE:
     st.sidebar.success("LaTeX-OCR / pix2tex available")
 else:
-    st.sidebar.warning("LaTeX-OCR / pix2tex not installed")
+    st.sidebar.warning(f"LaTeX-OCR / pix2tex not installed ({PIX2TEX_STATUS})")
 
 if TESSERACT_AVAILABLE:
     st.sidebar.success("Tesseract available")
 else:
-    st.sidebar.warning("Tesseract not installed")
+    st.sidebar.warning(f"Tesseract not installed ({TESSERACT_STATUS})")
 
 uploaded_file = st.file_uploader("Upload an image containing a mathematical equation", type=["png", "jpg", "jpeg"])
 expected_equation = st.text_area("Enter the expected/correct equation for comparison", placeholder="Example: s^2 = \\frac{\\sum (x_i - \\bar{x})^2}{n - 1}")
@@ -124,7 +157,8 @@ if uploaded_file is not None:
         with st.spinner("Recognizing equation..."):
             if ocr_engine == "LaTeX-OCR / pix2tex Recommended":
                 if PIX2TEX_AVAILABLE:
-                    recognized_text = recognize_with_pix2tex(processed_image)
+                    # pix2tex works best with original, non-thresholded images
+                    recognized_text = recognize_with_pix2tex(original_image)
                     if not recognized_text:
                         st.error("LaTeX-OCR / pix2tex failed to recognize the image.")
                 else:
@@ -132,6 +166,7 @@ if uploaded_file is not None:
 
             elif ocr_engine == "Tesseract OCR Fallback":
                 if TESSERACT_AVAILABLE:
+                    # Tesseract benefits from preprocessing
                     recognized_text = recognize_with_tesseract(processed_image)
                     if not recognized_text.strip():
                         st.warning("Tesseract returned no text. Try the built-in mock or upload a clearer image.")
