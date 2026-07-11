@@ -2,7 +2,7 @@
 
 ### Overview
 
-EquaSense is a deep learning–based Optical Character Recognition (OCR) system designed to recognize and convert handwritten or printed mathematical equations into structured digital formats such as LaTeX, TXT, and PDF. The project addresses the limitations of traditional OCR systems by analyzing both mathematical symbols and their spatial relationships to accurately reconstruct complex mathematical expressions.
+EquaSense is a deep learning–based Optical Character Recognition (OCR) system designed to recognize and convert handwritten or printed mathematical equations into structured digital formats such as LaTeX, TXT, and PDF. The project addresses the limitations of traditional OCR systems by analyzing both mathematical symbols and their  relationships to accurately reconstruct complex mathematical expressions.
 
 This project is developed as a requirement for **CPE179P – Software Design** at **Mapúa University**.
 
